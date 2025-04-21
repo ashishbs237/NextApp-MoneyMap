@@ -6,6 +6,7 @@
   --accent: #10b981;
   --sidebar-bg: #111827;
   --sidebar-link-hover: #059669;
+  --sidebar-link-active: #059669;
 }
 
 @theme inline {

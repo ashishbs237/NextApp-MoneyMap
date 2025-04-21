@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { useStore } from "@/context/authContext";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
+
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -37,10 +38,25 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 }
 
 function SidebarLink({ href, label }: { href: string; label: string }) {
+  const pathname = usePathname()
+
+  const isActive = (() => {
+    // exact match
+    if (pathname === href) return true
+
+    // match dynamic/nested routes but avoid matching "/dashboard" with "/dashboard/income"
+    if (href !== '/dashboard' && pathname.startsWith(href)) return true
+
+    return false
+  })()
+
   return (
     <Link
       href={href}
-      className="px-3 py-2 rounded-lg hover:bg-[var(--sidebar-link-hover)] transition-colors duration-150"
+      className={`px-3 py-2 rounded-lg transition-colors duration-150 ${isActive
+        ? "bg-[var(--sidebar-link-active)] font-semibold"
+        : "hover:bg-[var(--sidebar-link-hover)]"
+        }`}
     >
       {label}
     </Link>

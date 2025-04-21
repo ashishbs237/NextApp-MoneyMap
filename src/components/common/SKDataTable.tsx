@@ -39,12 +39,13 @@ const SKDataTable: React.FC<SKDataTableProps> = ({
     };
 
     return (
-        <div className="w-full bg-white rounded-lg shadow-md p-4">
+        // <div className="w-full bg-white rounded-lg shadow-md p-4">
+        <div>
             {/* Table */}
             <div className="overflow-x-auto mt-4">
-                <table className="w-full table-auto border-collapse">
-                    <thead>
-                        <tr className="bg-gray-100 text-left">
+                <table className="w-full text-left text-sm">
+                    <thead className="text-gray-500 border-b">
+                        <tr >
                             {
                                 checkBoxSelection && <th className="px-4 py-2">
                                     <input
@@ -60,7 +61,7 @@ const SKDataTable: React.FC<SKDataTableProps> = ({
                                 </th>
                             }
                             {columns.map((column, index) => (
-                                <th key={index} className="px-4 py-2 font-medium">
+                                <th key={index} className="px-4 py-2 ">
                                     {column.label}
                                 </th>
                             ))}
@@ -76,7 +77,7 @@ const SKDataTable: React.FC<SKDataTableProps> = ({
                                     : alternateRowColors[1];
 
                             return (
-                                <tr key={row._id} className={`border-b ${rowColor}`}>
+                                <tr key={row._id} className={`hover:bg-gray-300 ${rowColor}`}>
                                     {
                                         checkBoxSelection &&
                                         <td className="px-4 py-2">

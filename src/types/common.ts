@@ -18,9 +18,25 @@ export interface IConfirmatinDialogAction<T> {
 export interface IIncomeItem {
   _id?: string | number;
   label?: string;
-  amount?: string;
+  amount?: string | 0;
   customLabel?: string | undefined;
-  yearlyIncrement?: number;
+  yearlyIncrement?: number | 0;
+}
+
+export interface IExpenseItem {
+  _id?: string | number;
+  label?: string;
+  amount?: string | 0;
+  customLabel?: string | undefined;
+  tag?: string;
+}
+
+export interface IInvestmentItem {
+  _id?: string | number;
+  label?: string;
+  amount?: string | 0;
+  customLabel?: string | undefined;
+  tag?: string;
 }
 
 export type ActionType = "add" | "edit" | "delete" | "info" | "default" | null;

@@ -14,8 +14,10 @@ import React, { useEffect, useState } from 'react'
 import BlockingLoader from '@/components/common/BlockingLoader'
 import { formatText } from '@/utils/ui/functions'
 import Card from '@/components/common/Card'
+import { useRouter } from 'next/navigation'
 
 const Page = () => {
+  const router = useRouter();
   const [incomeList, setIncomeList] = useState<IIncomeItem[]>([]);
   const [action, setAction] = useState<ActionType>(null);
   const [incomeItem, setIncomeItem] = useState<any>({});
@@ -24,16 +26,40 @@ const Page = () => {
   const { successToast, errorToast } = useToast();
   const [loadingCount, setLoadingCount] = useState(0);
 
-  useEffect(() => {
-    (async () => {
-      const res = await getIncomeLabels();
-      setSavedLabels(res.data.map((item: { label: string }) => item?.label));
-    })();
+  const incomeSummary = incomeList.reduce(
+    (acc: any, curr: any) => {
+      const { amount, yearlyIncrement } = curr;
 
-    (async () => {
-      const res = await getIncomeList();
-      setIncomeList(res.data);
-    })();
+      acc.currMonthlyIncome = (acc.currMonthlyIncome || 0) + amount;
+      acc.currYearlyIncome = acc.currMonthlyIncome * 12;
+
+      // Next month's income is current amount + increment
+      const nextMonthIncome = amount + (amount * yearlyIncrement) / 100;
+      acc.nextMonthlyIncome = (acc.nextMonthlyIncome || 0) + nextMonthIncome;
+      acc.nextYearlyIncome = acc.nextMonthlyIncome * 12;
+
+      return acc;
+    },
+    {}
+  );
+
+  useEffect(() => {
+    try {
+      setLoadingCount((prev) => prev + 1);
+      (async () => {
+        const res = await getIncomeLabels();
+        setSavedLabels(res.data.map((item: { label: string }) => item?.label));
+      })();
+
+      (async () => {
+        const res = await getIncomeList();
+        setIncomeList(res.data);
+      })();
+    } catch (err) {
+      errorToast(err);
+    } finally {
+      setLoadingCount((prev) => prev - 1);
+    }
   }, [])
 
   const columns: ColumnDefinition[] = [
@@ -80,7 +106,7 @@ const Page = () => {
 
   const handleSaveItem = async (payload: object) => {
     try {
-      setLoadingCount((prev) => prev + 1)
+
       if (incomeItem?._id) {
         const res = await updateIncome(incomeItem?._id, payload);
         successToast(res.message);
@@ -100,7 +126,6 @@ const Page = () => {
     } catch (err) {
       errorToast(err)
     } finally {
-      setLoadingCount((prev) => prev - 1)
       setIncomeItem(null)
     }
   }
@@ -113,14 +138,14 @@ const Page = () => {
     } catch (err) {
       errorToast(err)
     } finally {
-
+      setIncomeItem(null)
     }
   }
 
   const handleIncomeItem = async () => {
     const { amount, label, customLabel, yearlyIncrement } = incomeItem;;
-    const newLbl = formatText(customLabel);
-    if (amount && (newLbl || label)) {
+    const newLbl = formatText(customLabel || label);
+    if (amount && (newLbl)) {
 
       // check if label is already exists in the list
 
@@ -131,18 +156,19 @@ const Page = () => {
 
       let isLabelUsed = false;
       if (incomeItem?._id) {
-        isLabelUsed = incomeList.some((item: IIncomeItem) => item._id !== incomeItem?._id && item?.label?.toLowerCase() === (newLbl || label)?.toLowerCase());
+        isLabelUsed = incomeList.some((item: IIncomeItem) => item._id !== incomeItem?._id && item?.label === newLbl);
       } else {
-        isLabelUsed = incomeList.some((item: IIncomeItem) => item?.label?.toLowerCase() === (newLbl || label)?.toLowerCase());
+        isLabelUsed = incomeList.some((item: IIncomeItem) => item?.label === newLbl);
       }
       if (isLabelUsed) {
         errorToast('Label already used. Please use a different label.');
+        setIncomeItem({ ...incomeItem, label: '', customLabel: '' });
         return;
       }
 
       handleSaveItem({
         amount: Number(amount),
-        label: newLbl || label,
+        label: newLbl,
         yearlyIncrement
       });
 
@@ -156,15 +182,34 @@ const Page = () => {
 
   return (
     <>
-      <SKHeader text={'Income List'}>
-        <SKButton label='Add' tabType='income' onClick={() => setAction('add')} />
+      <SKHeader text='Income List'>
+        <SKButton label='Manage labels' tabType='income' onClick={() => router.push("/dashboard/settings/income")} />
       </SKHeader>
-      <Card amount={77000} title='Total Income' />
-      <SKDataTable
-        columns={columns}
-        rows={incomeList}
-      // checkBoxSelection
-      />
+
+      <div className="bg-white p-6 rounded-xl shadow space-y-4">
+        <div className="flex justify-between items-center">
+          <h2 className="text-xl font-semibold text-gray-700">Summary</h2>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <Card amount={incomeSummary.currMonthlyIncome || 0} title='Current Monthly Income' />
+          <Card amount={incomeSummary.currYearlyIncome || 0} title='Current Yearly Income' />
+          <Card amount={incomeSummary.nextMonthlyIncome || 0} title='Next Year Monthly Income' />
+          <Card amount={incomeSummary.nextYearlyIncome || 0} title='Next Year Yearly Income' />
+        </div>
+      </div>
+
+      {/* Income Table*/}
+      <div className="bg-white p-6 rounded-xl shadow overflow-x-auto">
+        <div className='flex gap-3 items-center justify-between'>
+          <h3 className="flextext-lg font-semibold text-gray-700">Income List</h3>
+          <SKButton label='+ Add income' tabType='income' onClick={() => setAction('add')} />
+        </div>
+
+        <SKDataTable
+          columns={columns}
+          rows={incomeList}
+        />
+      </div>
 
       {/* Add / Update Income Source */}
       <SKModal
@@ -236,7 +281,7 @@ const Page = () => {
       {/* Delete Confirmation Dialog */}
       <ConfirmationDialog
         variant='delete'
-        onClose={() => setAction(null)}
+        onClose={() => { setAction(null); setIncomeItem(null) }}
         open={action === 'delete'}
         onConfirm={() => handleDeleteIncome()}
         information="Are you sure you want to delete this income entry?"

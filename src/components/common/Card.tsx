@@ -16,24 +16,17 @@ const Card: React.FC<TotalIncomeCardProps> = ({ amount, title, tabType = 'defaul
 
     return (
         <div
-            className="rounded-md p-4 shadow-lg flex flex-col justify-between gap-1 max-w-[200px]"
+            className="bg-gray-100 p-4 rounded-lg shadow-inner"
             style={{ backgroundColor: theme.background, color: theme.text }}
         >
-            <div className="flex items-center gap-2">
-                {/* <div className="p-2 bg-white/20 rounded-full">
-                    <IndianRupee size={24} />
-                </div> */}
-                <h2 className="text-xl font-semibold">{title}</h2>
-            </div>
-
-            <div className="text-2xl font-bold tracking-wide">
-                {formatINR(amount)}
-            </div>
+            <p className="text-sm text-gray-500">{title}</p>
+            <p className="text-lg font-bold text-gray-800">{formatINR(amount)}</p>
             {/* 
             <div className="text-sm text-white text-opacity-80">
                 Updated just now
             </div> */}
         </div>
+
     );
 };
 
