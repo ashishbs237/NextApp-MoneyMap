@@ -31,6 +31,16 @@ export interface IExpenseItem {
   tag?: string;
 }
 
+export interface IEmiItem {
+  _id?: string | number;
+  label?: string;
+  amount?: string | 0;
+  customLabel?: string | undefined;
+  totalEmis?: number | undefined;
+  deductionDate?: number | undefined;
+  tag?: string;
+}
+
 export interface IInvestmentItem {
   _id?: string | number;
   label?: string;
