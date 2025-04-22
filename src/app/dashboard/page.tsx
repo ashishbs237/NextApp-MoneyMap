@@ -18,12 +18,14 @@ import BlockingLoader from '@/components/common/BlockingLoader'
 import { getIncomeList } from '@/utils/ui/apiFunctions/incomeAPI'
 import { getInvestmentList } from '@/utils/ui/apiFunctions/investmentAPI'
 import { getExpenseList } from '@/utils/ui/apiFunctions/expenseAPI'
+import SKHeader from '@/components/common/Header'
 
 export default function DashboardPage() {
-    const { successToast, errorToast } = useToast();
+    const { errorToast } = useToast();
     const [summary, setSummary] = useState<any>({ emi: 15000 });
     const [loadingCount, setLoadingCount] = useState(0);
 
+    // get finance data
     useEffect(() => {
         try {
             setLoadingCount((prev) => prev + 1);
@@ -36,7 +38,7 @@ export default function DashboardPage() {
                         acc += curr.amount;
                         return acc
                     }, 0)
-                    sum && setSummary((prev) => ({ ...prev, income: sum }));
+                    setSummary((prev) => ({ ...prev, income: sum || 0 }));
                 }
             })();
 
@@ -48,7 +50,7 @@ export default function DashboardPage() {
                         acc += curr.amount;
                         return acc
                     }, 0)
-                    sum && setSummary((prev) => ({ ...prev, expense: sum }));
+                    setSummary((prev) => ({ ...prev, expense: sum || 0 }));
                 }
             })();
 
@@ -60,7 +62,7 @@ export default function DashboardPage() {
                         acc += curr.amount;
                         return acc
                     }, 0)
-                    sum && setSummary((prev) => ({ ...prev, investment: sum }));
+                    setSummary((prev) => ({ ...prev, investment: sum || 0 }));
                 }
             })()
         } catch (err) {
@@ -83,6 +85,7 @@ export default function DashboardPage() {
 
     return (
         <div className="space-y-6">
+            <SKHeader text="Dashboard Overview" />
             {/* Section 1: Summary Cards */}
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
                 <SKCard>
