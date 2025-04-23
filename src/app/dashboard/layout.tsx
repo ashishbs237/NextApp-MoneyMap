@@ -8,7 +8,7 @@ import { useRouter, usePathname } from "next/navigation";
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex justify-center min-h-screen px-2 sm:px-8 py-3">
-      <div className="w-full max-w-[1280px] flex overflow-hidden rounded-2xl shadow-lg border border-gray-200 bg-[var(--background)] transition-all">
+      <div className="w-full max-w-[1400px] flex overflow-hidden rounded-2xl shadow-lg border border-gray-200 bg-[var(--background)] transition-all">
 
         {/* Sidebar */}
         <aside className="w-64 bg-[var(--sidebar-bg)] text-white flex flex-col p-4 justify-between">
