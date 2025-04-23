@@ -19,11 +19,11 @@ export async function PUT(
     if (!validation.success) {
       return NextResponse.json({ message: validation.error }, { status: 400 });
     }
-    const { label, amount, totalEmis, deductionDate, tag } = body;
+    const { label, amount, totalEmis, deductionDate, startMonth, startYear, tag } = body;
 
     const updated = await EmiSchema.findByIdAndUpdate(
       id,
-      { amount, label, tag  , totalEmis, deductionDate},
+      { amount, label, tag, totalEmis, deductionDate, startMonth, startYear },
       { new: true }
     );
 
@@ -68,7 +68,7 @@ export async function DELETE(
     }
 
     return NextResponse.json({
-      data: { _id : deleted._id}, message: "Emi item deleted" ,
+      data: { _id: deleted._id }, message: "Emi item deleted",
       status: 200,
     });
   } catch (err: any) {

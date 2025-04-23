@@ -20,6 +20,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               <SidebarLink href="/dashboard/expense" label="Expense" />
               <SidebarLink href="/dashboard/emi" label="EMI" />
               <SidebarLink href="/dashboard/investment" label="Investment" />
+              <SidebarLink href="/dashboard/loan-calculation" label="Loan calculation" />
               <SidebarLink href="/dashboard/settings" label="Settings" />
             </nav>
           </div>

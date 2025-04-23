@@ -1,7 +1,7 @@
 const keyObj = {
   income: ["label", "amount"],
   expense: ["label", "amount"],
-  emi: ["label", "amount", "totalEmis", "deductionDate"],
+  emi: ["label", "amount", "totalEmis", "deductionDate", "startMonth", "startYear"],
   investment: ["label", "amount"],
 };
 
@@ -16,9 +16,8 @@ export function validateRequest<T extends object>(
   if (missing.length > 0) {
     return {
       success: false,
-      error: `${missing.join(", ")} ${
-        missing.length === 1 ? "is" : "are"
-      } required`,
+      error: `${missing.join(", ")} ${missing.length === 1 ? "is" : "are"
+        } required`,
     };
   }
 

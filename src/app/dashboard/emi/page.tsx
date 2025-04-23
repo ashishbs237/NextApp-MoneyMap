@@ -44,45 +44,37 @@ const Page = () => {
   );
 
   useEffect(() => {
-    console.log("Count : ", loadingCount)
-  }, [loadingCount])
-
-  useEffect(() => {
-    let isMounted = true;
     setLoadingCount((prev) => prev + 1);
-  
     const fetchData = async () => {
       try {
         const [labelsRes, emiRes] = await Promise.all([
           getEMILabels(),
           getEmiList(),
         ]);
-  
-        if (!isMounted) return;
-  
+
         setSavedLabels(labelsRes.data.map((item: { label: string }) => item.label));
         setEmiList(emiRes.data);
       } catch (err) {
         errorToast(err);
       } finally {
-        if (isMounted) setLoadingCount((prev) => prev - 1);
+        setLoadingCount((prev) => prev - 1);
       }
     };
-  
     fetchData();
-  
-    return () => {
-      isMounted = false;
-    };
   }, []);
-  
 
   const columns: ColumnDefinition[] = [
     { label: 'Amount', accessor: 'amount' },
     { label: 'Label', accessor: 'label' },
     { label: 'Total Emis', accessor: 'totalEmis' },
     { label: 'Deduction Date', accessor: 'deductionDate' },
-    { label: 'Tag', accessor: 'tag' },
+    {
+      label: 'Start From',
+      accessor: 'startFrom',
+      renderCell: (row) => (
+        <span>{`${row.startMonth} ${row.startYear}`}</span>
+      )
+    },
     {
       label: 'Actions',
       accessor: 'actions',
@@ -160,7 +152,7 @@ const Page = () => {
   }
 
   const handleIncomeItem = async () => {
-    const { amount, label, customLabel, totalEmis, deductionDate, tag } = emiItem;;
+    const { amount, label, customLabel, totalEmis, deductionDate, startMonth, startYear, tag } = emiItem;
     const newLbl = formatText(customLabel || label);
     if (amount && (newLbl)) {
 
@@ -186,8 +178,10 @@ const Page = () => {
       handleSaveItem({
         amount: Number(amount),
         label: newLbl,
-        totalEmis,
-        deductionDate,
+        totalEmis: Number(totalEmis),
+        deductionDate: Number(deductionDate),
+        startMonth: Number(startMonth),
+        startYear: Number(startYear),
         tag
       });
 
@@ -318,6 +312,30 @@ const Page = () => {
               onChange={(e) => handleChange('tag', e.target.value)}
               className="px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
             />
+          </div>
+
+          {/* Start Month and Year Input */}
+          <div className="flex gap-1" >
+            <div className="flex flex-col gap-1">
+              <label className="text-sm text-gray-600 font-medium">Start Month</label>
+              <input
+                type="text"
+                placeholder="Enter Month"
+                value={emiItem?.startMonth || ''}
+                onChange={(e) => handleChange('startMonth', e.target.value)}
+                className="px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
+              />
+            </div>
+            <div className="flex flex-col gap-1">
+              <label className="text-sm text-gray-600 font-medium">Start Year</label>
+              <input
+                type="text"
+                placeholder="Enter Year"
+                value={emiItem?.startYear || ''}
+                onChange={(e) => handleChange('startYear', e.target.value)}
+                className="px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
+              />
+            </div>
           </div>
         </div>
       </SKModal>

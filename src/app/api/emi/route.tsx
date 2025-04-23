@@ -11,6 +11,7 @@ export async function GET() {
         const tokenData = await verifyJwtToken();
 
         const items = await EmiSchema.find({ userId: tokenData._id }).sort({ amount: 1 }); // sort alphabetically
+        console.log("items : ", items)
         return NextResponse.json({ data: items, message: "Received emis." }, { status: 200 });
     } catch (err: any) {
         const errorMessage =
@@ -28,17 +29,20 @@ export async function POST(request: Request) {
     try {
         const tokenData = await verifyJwtToken();
         const body = await request.json();
+        console.log("body : ", body);
         const validation = validateRequest("emi", body);
         if (!validation.success) {
             return NextResponse.json({ message: validation.error }, { status: 400 });
         }
-        const { label, amount, tag, totalEmis, deductionDate } = body;
+        const { label, amount, tag, totalEmis, deductionDate, startMonth, startYear } = body;
 
         const { _id } = await EmiSchema.create({
             label,
             amount,
             totalEmis,
             deductionDate,
+            startMonth,
+            startYear,
             tag,
             userId: tokenData._id
         });
