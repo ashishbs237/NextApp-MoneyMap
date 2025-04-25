@@ -197,9 +197,7 @@ export default function LoanCalculatorPage() {
 
     return (
         <div className="h-[calc(100vh-64px)] space-y-6 overflow-y-auto p-1">
-
             <h1 className="text-2xl font-bold">Smart Loan Calculator</h1>
-
             <Card>
                 <CardContent className="p-6 space-y-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

@@ -1,7 +1,7 @@
 import React from "react"
 import { Card, CardContent } from "@/components/ui/card"
 
-const ComparisonTable = ({ data }) => {
+const ComparisonTable = ({ data, principalAmt }) => {
   return (
     <Card>
       <CardContent className="overflow-x-auto p-4">
@@ -18,13 +18,13 @@ const ComparisonTable = ({ data }) => {
           <tbody>
             {data.map((item, idx) => (
               <tr key={idx} className="odd:bg-white even:bg-gray-50">
-                <td className="px-4 py-2 border font-medium">{item.name}</td>
-                <td className="px-4 py-2 border">₹{item.Principal.toLocaleString()}</td>
-                <td className="px-4 py-2 border">₹{item.Interest.toLocaleString()}</td>
+                <td className="px-4 py-2 border font-medium">{item.strategy}</td>
+                <td className="px-4 py-2 border">₹{principalAmt.toLocaleString()}</td>
+                <td className="px-4 py-2 border">₹{item.totalInterestPaid.toLocaleString()}</td>
                 <td className="px-4 py-2 border">
-                  ₹{(item.Principal + item.Interest).toLocaleString()}
+                  ₹{item.totalAmountPaid.toLocaleString()}
                 </td>
-                <td className="px-4 py-2 border">{item.Tenure}</td>
+                <td className="px-4 py-2 border">{item.loanDurationMonths}</td>
               </tr>
             ))}
           </tbody>
